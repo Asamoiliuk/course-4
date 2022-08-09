@@ -238,11 +238,12 @@ li.footer-list__item:first-of-type {
     margin-top: 30px;
 }
 
-a.footer-link {
+a.footer-link:link {
     font-weight: 500;
     font-size: 16px;
     line-height: 26px;
     text-decoration: none;
+    color: #544837;
 }
 
 a.footer-link:visited {
