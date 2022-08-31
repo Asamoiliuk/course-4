@@ -10,6 +10,7 @@
 @include font-face('poppins', normal, 400, '../fonts/poppins-v20-latin-ext-regular');
 @include grid(12);
 
+
 html {
     font-size: 10px;
 }
@@ -73,3 +74,7 @@ html {
 @import './sections';
 @import './header';
 @import './footer';
+
+@import './media-md';
+@import './media-sm';
+@import './media-xs';
