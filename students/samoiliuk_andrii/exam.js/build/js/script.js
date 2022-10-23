@@ -31620,7 +31620,7 @@ var map = leaflet__WEBPACK_IMPORTED_MODULE_9___default().map('map', mapOptions).
 leaflet__WEBPACK_IMPORTED_MODULE_9___default().tileLayer('https://tile.jawg.io/jawg-light/{z}/{x}/{y}{r}.png?access-token=1RSWcIKFGBx6iaqbkPud1enTVg16aOTk5NptER0YeAOAaYZQlu3KpKcOrUD4XqWl', {}).addTo(map);
 map.attributionControl.addAttribution("<a href=\"https://www.jawg.io\" target=\"_blank\">&copy; Jawg</a> - <a href=\"https://www.openstreetmap.org\" target=\"_blank\">&copy; OpenStreetMap</a>&nbsp;contributors");
 var customIcon = leaflet__WEBPACK_IMPORTED_MODULE_9___default().icon({
-  iconUrl: '../images/marker.svg',
+  iconUrl: './images/marker.svg',
   iconSize: [106, 106],
   iconAnchor: [54, 54]
 });
