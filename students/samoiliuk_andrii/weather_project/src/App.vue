@@ -1,20 +1,31 @@
 <template>
     <div class="page">
-        <wx-brief-header />
-        <aside class="page__sidebar">
-            <wx-brief-sidebar
-                :groups="groups"
-                :isDisabled="isDisabled"
-                @addGroup="addGroup"
-                @removeGroup="removeGroup"
-                @displayMetarTaf="displayMetarTaf"
-            />
-        </aside>
+        <header class="page__header">
+            <wx-brief-header />
+        </header>
         <main class="page__main">
-            <wx-brief-main-window :currentDisplay="currentDisplay" />
+            <div class="container">
+                <div class="row">
+                    <aside class="col-3">
+                        <wx-brief-sidebar
+                            :groups="groups"
+                            :isDisabled="isDisabled"
+                            @addGroup="addGroup"
+                            @removeGroup="removeGroup"
+                            @displayMetarTaf="displayMetarTaf"
+                        />
+                    </aside>
+                    <div class="col-9">
+                        <wx-brief-main-window
+                            :currentDisplay="currentDisplay"
+                        />
+                    </div>
+                </div>
+            </div>
         </main>
-
-        <wx-brief-footer class="page__footer" />
+        <footer class="page__footer">
+            <wx-brief-footer />
+        </footer>
     </div>
 </template>
 
@@ -55,9 +66,10 @@ export default {
             ],
             metarTafCache: [],
             currentDisplay: {
-                taf: [],
-                data: [],
-                time: 0,
+                index: "",
+                data: "",
+                time: "",
+                name: "",
             },
             isDisabled: false,
         };
@@ -70,7 +82,7 @@ export default {
             );
         }
 
-        if (!this.groups.length) {
+        if (this.groups.length === 0) {
             this.groups.push(...this.defaultGroups);
         }
 
@@ -81,22 +93,25 @@ export default {
         } else {
             this.displayMetarTaf(1);
         }
-
-        this.currentDisplay = {
-            data: this.metarTafCache[0].data,
-            time: this.metarTafCache[0].time,
-            taf: this.metarTafCache[0].taf,
-        };
+        if (this.metarTafCache[0]) {
+            this.currentDisplay = {
+                name: this.groups[0].name,
+                data: this.metarTafCache[0].data,
+                time: this.metarTafCache[0].time,
+                taf: this.metarTafCache[0].taf,
+            };
+        }
     },
 
     methods: {
         addGroup(name, airports) {
-            this.groups.push({
+            this.groups.unshift({
                 name: name,
                 airports: this.validateAirports(airports),
                 index: this.setIndex(),
             });
             localStorage.setItem("userAirports", JSON.stringify(this.groups));
+            this.displayMetarTaf(this.groups[0].index);
         },
 
         validateAirports(airportsString) {
@@ -201,18 +216,26 @@ export default {
             indexInArray = this.getIndex(index, this.metarTafCache);
 
             this.currentDisplay = {
+                index: this.metarTafCache[indexInArray].index,
                 data: this.metarTafCache[indexInArray].data,
                 time: this.metarTafCache[indexInArray].time,
-                taf: this.metarTafCache[indexInArray].taf,
+                name: this.groups[this.getIndex(index, this.groups)].name,
             };
         },
 
-        pushToLocal(data, taf, index) {
+        pushToLocal(metar, taf, index) {
+            for (let i = 0; i < metar.data.length; i++) {
+                metar.data[i].forecast = taf.data.find(function (element) {
+                    if (element.icao === metar.data[i].icao) {
+                        return true;
+                    }
+                });
+            }
+
             this.metarTafCache.push({
                 index: index,
-                data: data,
-                taf: taf,
                 time: Date.now(),
+                data: metar,
             });
             localStorage.setItem(
                 "metarTafCache",
@@ -224,42 +247,35 @@ export default {
 </script>
 
 <style lang="scss">
+@use "sass:math";
 @import "./assets/css/reset.scss";
+@import "./assets/css/grid.scss";
+@import "./assets/css/fonts.scss";
+@include grid(12);
+
+body {
+    background-color: #252326;
+    color: #f3f3f3;
+    font-family: "Manrope", Arial, Helvetica, sans-serif;
+    font-size: 16px;
+    font-style: normal;
+}
+
 .page {
-    $sidebar-width: 200px;
-    $main-color: #2c3e50;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 
-    font-family: Arial, Helvetica, sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    color: $main-color;
-
-    &__sidebar {
-        box-sizing: border-box;
-        width: $sidebar-width;
-        position: absolute;
-        top: 100px;
-        left: 0;
-        bottom: 20px;
-        padding-right: 5px;
+    &__header {
+        margin-bottom: 35px;
     }
 
     &__main {
-        position: absolute;
-        top: 100px;
-        left: $sidebar-width;
-        bottom: 20px;
-        right: 0;
-        border-left: 1px solid black;
-        overflow-y: scroll;
+        flex-grow: 2;
     }
 
     &__footer {
-        position: absolute;
-        height: 20px;
-        bottom: 0;
-        left: 0;
-        right: 0;
+        background-color: #060606;
     }
 }
 </style>
