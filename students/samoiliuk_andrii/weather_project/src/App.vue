@@ -1,12 +1,17 @@
 <template>
-    <div class="page">
+    <div class="page" @click="closeSidebar">
         <header class="page__header">
             <wx-brief-header />
         </header>
         <main class="page__main">
             <div class="container">
-                <div class="row">
-                    <aside class="col-3">
+                <div class="row mobile">
+                    <aside
+                        :class="
+                            'col-3 col-sm-6 col-xs-12 mobile__sidebar ' +
+                            this.closed
+                        "
+                    >
                         <wx-brief-sidebar
                             :groups="groups"
                             :isDisabled="isDisabled"
@@ -15,9 +20,10 @@
                             @displayMetarTaf="displayMetarTaf"
                         />
                     </aside>
-                    <div class="col-9">
+                    <div class="col-9 col-sm-12 mobile__mainWindow">
                         <wx-brief-main-window
                             :currentDisplay="currentDisplay"
+                            @displaySidebar="displaySidebar"
                         />
                     </div>
                 </div>
@@ -72,6 +78,8 @@ export default {
                 name: "",
             },
             isDisabled: false,
+            closedStyle: "mobile__sidebar_closed",
+            closed: "",
         };
     },
 
@@ -101,6 +109,8 @@ export default {
                 taf: this.metarTafCache[0].taf,
             };
         }
+
+        this.closed = this.closedStyle;
     },
 
     methods: {
@@ -221,6 +231,8 @@ export default {
                 time: this.metarTafCache[indexInArray].time,
                 name: this.groups[this.getIndex(index, this.groups)].name,
             };
+
+            this.displaySidebar();
         },
 
         pushToLocal(metar, taf, index) {
@@ -242,40 +254,32 @@ export default {
                 JSON.stringify(this.metarTafCache)
             );
         },
+
+        displaySidebar() {
+            if (this.closed === this.closedStyle) {
+                this.closed = "";
+            } else if (this.closed === "") {
+                this.closed = this.closedStyle;
+            }
+        },
+        closeSidebar(event) {
+            if (event.target.closest(".closeButton")) {
+                if (this.closed === "") {
+                    this.closed = this.closedStyle;
+                }
+            } else if (
+                !event.target.closest(".mobileMenuButton") &&
+                !event.target.closest(".tabs") &&
+                !event.target.closest(".mobile__sidebar")
+            )
+                if (this.closed === "") {
+                    this.closed = this.closedStyle;
+                }
+        },
     },
 };
 </script>
 
 <style lang="scss">
-@use "sass:math";
-@import "./assets/css/reset.scss";
-@import "./assets/css/grid.scss";
-@import "./assets/css/fonts.scss";
-@include grid(12);
-
-body {
-    background-color: #252326;
-    color: #f3f3f3;
-    font-family: "Manrope", Arial, Helvetica, sans-serif;
-    font-size: 16px;
-    font-style: normal;
-}
-
-.page {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-
-    &__header {
-        margin-bottom: 35px;
-    }
-
-    &__main {
-        flex-grow: 2;
-    }
-
-    &__footer {
-        background-color: #060606;
-    }
-}
+@import "./assets/css/style.scss";
 </style>

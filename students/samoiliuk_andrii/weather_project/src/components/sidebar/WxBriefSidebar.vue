@@ -1,6 +1,11 @@
 <template>
     <div class="sidebar">
-        <h3 class="sidebar__header">My Airport Groups</h3>
+        <div class="sidebar__headerWrapper">
+            <h3 class="sidebar__header">My Airport Groups</h3>
+            <div class="sidebar__close closeButton" @click="closeSidebar">
+                X
+            </div>
+        </div>
         <wx-brief-sidebar-create class="sidebar__create" @addGroup="addGroup" />
         <wx-brief-sidebar-display
             class="sidebar__display"
@@ -58,6 +63,13 @@ export default {
 
     &__display {
         flex-grow: 2;
+    }
+    &__headerWrapper {
+        display: flex;
+        justify-content: space-between;
+    }
+    &__close {
+        display: none;
     }
 }
 </style>
